@@ -4,10 +4,6 @@ body {
   /* overflow:hidden; */
 }
 
-#divMap {
-  min-width: 10000px;
-  min-height: 10000px;
-}
 #cnv {
   /* cursor: none; */
   z-index: 1;
