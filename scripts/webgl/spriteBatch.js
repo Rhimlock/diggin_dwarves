@@ -113,16 +113,25 @@ const vert = `#version 300 es
   uniform vec2 uView;
   uniform float uProgress;
 void main() {
-  // resize and move to position
-  vec2  v = aVert.xy * 0.5 * aSize.xy + aPos.xy - uView;
-  // move into direction by progress
-  v =v +  aDir * round(aSize.x * uProgress) /aSize.x ;
-  //flip y
+
+  float step = floor(aAnim.x * aAnim.y * uProgress);
+
+  vec2 v = aVert.xy;
+  if (aAnim.x < 0.0) v.x *= -1.0;
+// resize and move to position
+  v = v * 0.5 * aSize.xy + aPos.xy - uView;
+// move into direction by progress
+  v = v + aDir * step / (aAnim.x * aAnim.y);
+//flip y
   v.y *= -1.0;
   // convert to clipspace realign to topleft corner
   gl_Position = vec4(v * uResInv + vec2(-1.0,1.0), 0.0, 1.0);
   //set texture
-  v = (aVert.zw + aTex) * aSize.xy + vec2(aSize.x * floor(aAnim.x * mod(uProgress * aAnim.y, 1.0)),0.0);
+  v = aAnim;
+  if (step < 0.0) step *= -1.0;
+  //if (v.x < 0.0) v.x *= -1.0;
+  v = (aVert.zw + aTex + vec2(mod(step, 8.0), 0.0)) * aSize.xy;
+  //select animation frame
   vTexCoord = v * uTexSizeInv;
   
 }`;

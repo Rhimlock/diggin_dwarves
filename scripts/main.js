@@ -12,7 +12,7 @@ const rect = initRectangle();
 // map.show = false;
 
 var stepstart = 0;
-var step = 2000;
+var step = 1000;
 loop();
 function loop(timestamp) {
   var progress = timestamp - stepstart;
@@ -20,18 +20,30 @@ function loop(timestamp) {
     progress %= step;
     stepstart = timestamp - progress;
     const spr = batch.sprites[0];
-    spr.x += 16;
+    spr.x += spr.dx;
+    
+    spr.dx = 0;
+    if (spr.ty == 1)  spr.dx = spr.frames > 0 ? 8 : -8;
     batch.buffer_inst.update();
+    spr.ty = 0;
 
   }
   render(progress / step);
   window.requestAnimationFrame(loop);
 }
 
-let counter = 0;
-window.onclick = ev => {
-}
+window.onkeypress = ev => {
+  console.log(ev.which);
+  const spr = batch.sprites[0];
+  
+  switch (ev.which) {
+    case 115: spr.ty = 2; break;
+    case 100: spr.ty = 1; spr.frames = 8; break;
+    case 119: spr.ty = 3;break;
+    case 97: spr.ty = 1; spr.frames = -8; break;
 
+  }
+}
 window.onmousemove = ev => {
   if (ev.button === 0) {
     const p = view.getCoords(ev.clientX, ev.clientY);
@@ -78,15 +90,15 @@ function initBatch(n) {
   const b = new SpriteBatch(n, img);
   drawables.push(b);
   const spr = b.addSprite();
-  spr.x = 0;
+  spr.x = 16;
   spr.y = 16;
-  spr.dx = 16;
+  spr.dx = 0;
   spr.w = 16;
   spr.h = 16;
-  spr.ty = 1;
+  spr.ty = 0;
   spr.tx = 0;
   spr.frames = 8;
-  spr.iterations = 2;
+  spr.iterations = 1;
   b.buffer_inst.update();
   return b;
 }
